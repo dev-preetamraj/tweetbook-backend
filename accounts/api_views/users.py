@@ -1,5 +1,4 @@
 import logging
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.versioning import NamespaceVersioning
 from rest_framework.permissions import AllowAny
@@ -10,6 +9,10 @@ from tweetbook.utils.custom_validators import CustomValidator
 from tweetbook.common import (
     messages as global_msg,
     constants as global_const
+)
+
+from accounts.helpers.function_helpers.users_helper_fn import (
+    register_user
 )
 
 # Get an instance of logger
@@ -71,8 +74,8 @@ class Users(APIView):
                 }
                 is_valid = c_validator.validate(request.data, schema)
                 if is_valid:
-                    result = {'data': 'Loda'}
-                    return Response(result, status=201)
+                    result = register_user(request)
+                    return result
                 else:
                     raise ce.ValidationFailed({
                         'message': global_msg.VALIDATION_FAILED,
