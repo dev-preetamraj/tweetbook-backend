@@ -25,7 +25,7 @@ class Profile(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     profile_picture = models.ImageField(upload_to=upload_to_profile_path, default='users/profile.png')

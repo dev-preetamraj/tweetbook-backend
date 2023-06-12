@@ -10,13 +10,14 @@ from tweetbook.common import messages as global_msg
 from accounts.helpers.query_helpers.users_helper_q import (
     get_user_by_email,
     get_user_by_username,
-    register_user as register_user_to_db
+    register_user_query,
+    get_user_and_profile_query
 )
 
 # Get an instance of logger
 logger = logging.getLogger('accounts')
 
-def register_user(request):
+def register_user_function(request):
     '''
         Register User in Database
     '''
@@ -50,7 +51,7 @@ def register_user(request):
                 'data': None
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        user = register_user_to_db(request.data)
+        user = register_user_query(request.data)
         if user is not None:
             return Response({
                 'success': True,
@@ -72,5 +73,30 @@ def register_user(request):
                 'data': None
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
-        logger.error(f'USERS FUNCTION HELPER - register_user: {e}')
+        logger.error(f'USERS FUNCTION HELPER - register_user_function: {e}')
+        raise ce.InternalServerError
+    
+def get_user_and_profile_function(request):
+    '''
+        Get Authenticated User Information
+    '''
+    try:
+        user_info = get_user_and_profile_query(request)
+        if not len(user_info) == 0:
+            return Response({
+                'success': True,
+                'status_code': status.HTTP_200_OK,
+                'message': app_msg.USER_FETCHED,
+                'data': user_info
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': global_msg.INTERNAL_SERVER_ERROR,
+                'data': None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    except Exception as e:
+        logger.error(f'USERS FUNCTION HELPER - get_user_and_profile_function: {e}')
         raise ce.InternalServerError

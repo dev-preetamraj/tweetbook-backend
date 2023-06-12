@@ -12,7 +12,8 @@ from tweetbook.common import (
 )
 
 from accounts.helpers.function_helpers.users_helper_fn import (
-    register_user
+    register_user_function,
+    get_user_and_profile_function
 )
 
 # Get an instance of logger
@@ -26,9 +27,9 @@ class VersioningConfig(NamespaceVersioning):
     allowed_versions = ['v1']
     version_param = 'version'
 
-class Users(APIView):
+class RegisterUserView(APIView):
     '''
-        Manage Users
+        Manage User Registration
     '''
 
     versioning_class = VersioningConfig
@@ -74,7 +75,7 @@ class Users(APIView):
                 }
                 is_valid = c_validator.validate(request.data, schema)
                 if is_valid:
-                    result = register_user(request)
+                    result = register_user_function(request)
                     return result
                 else:
                     raise ce.ValidationFailed({
@@ -85,16 +86,35 @@ class Users(APIView):
                 raise ce.VersionNotSupported
             
         except ce.ValidationFailed as vf:
-            logger.error(
-                'USERS API VIEW - POST : {}'.format(vf))
+            logger.error(f'RegisterUserView API VIEW - POST : {vf}')
             raise
 
         except ce.VersionNotSupported as vns:
-            logger.error(
-                'USERS API VIEW - POST : {}'.format(vns))
+            logger.error(f'RegisterUserView API VIEW - POST : {vns}')
             raise
 
         except Exception as e:
-            logger.error(
-                'USERS API VIEW - POST : {}'.format(e))
+            logger.error(f'RegisterUserView API VIEW - POST : {e}')
+            raise ce.InternalServerError
+        
+class Users(APIView):
+    '''
+        Manages Users
+    '''
+
+    def get(self, request):
+        try:
+            if request.version == 'v1':
+                return get_user_and_profile_function(request)
+
+            else:
+                raise ce.VersionNotSupported
+        
+        
+        except ce.VersionNotSupported as vns:
+            logger.error(f'USERS API VIEW - GET : {vns}')
+            raise
+
+        except Exception as e:
+            logger.error(f'USERS API VIEW - GET : {e}')
             raise ce.InternalServerError
