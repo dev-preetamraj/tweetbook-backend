@@ -176,7 +176,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
+        'tweetbook.authentication.CustomJWTAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -195,7 +195,17 @@ SIMPLE_JWT = {
 
 }
 
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_ACCESS_MAX_AGE = 60*5
+AUTH_COOKIE_REFRESH_MAX_AGE = 60*60*24*7
+AUTH_COOKIE_SECURE = os.getenv(key = 'AUTH_COOKIE_SECURE', default=True)
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAMESITE = 'None'
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'https://tweetbook.vercel.app'
 ]
+CORS_ALLOW_CREDENTIALS = True
