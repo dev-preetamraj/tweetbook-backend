@@ -87,7 +87,7 @@ DB_HOST = os.getenv(key = 'DB_HOST', default = 'localhost')
 DB_NAME = os.getenv(key = 'DB_NAME', default = 'tb_local')
 DB_USER = os.getenv(key = 'DB_USER', default = 'root')
 DB_PASSWORD = os.getenv(key = 'DB_PASSWORD', default = 'password')
-DB_PORT = os.getenv(key = 'DB_PORT', default = '3306')
+DB_PORT = os.getenv(key = 'DB_PORT', default = 3306)
 
 DATABASES = {
     'default': {
