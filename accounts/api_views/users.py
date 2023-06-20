@@ -12,8 +12,7 @@ from tweetbook.common import (
 )
 
 from accounts.helpers.function_helpers.users_helper_fn import (
-    register_user_function,
-    get_user_and_profile_function
+    register_user_fn
 )
 
 # Get an instance of logger
@@ -75,7 +74,7 @@ class RegisterUserView(APIView):
                 }
                 is_valid = c_validator.validate(request.data, schema)
                 if is_valid:
-                    result = register_user_function(request)
+                    result = register_user_fn(request)
                     return result
                 else:
                     raise ce.ValidationFailed({
@@ -95,26 +94,4 @@ class RegisterUserView(APIView):
 
         except Exception as e:
             logger.error(f'RegisterUserView API VIEW - POST : {e}')
-            raise ce.InternalServerError
-        
-class Users(APIView):
-    '''
-        Manages Users
-    '''
-
-    def get(self, request):
-        try:
-            if request.version == 'v1':
-                return get_user_and_profile_function(request)
-
-            else:
-                raise ce.VersionNotSupported
-        
-        
-        except ce.VersionNotSupported as vns:
-            logger.error(f'USERS API VIEW - GET : {vns}')
-            raise
-
-        except Exception as e:
-            logger.error(f'USERS API VIEW - GET : {e}')
             raise ce.InternalServerError

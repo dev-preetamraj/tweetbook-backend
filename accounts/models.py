@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-def upload_to_profile_path(instance, filename):
-    return f'users/profile/{instance.user.username}_{filename}'
+# def upload_to_profile_path(instance, filename):
+#     return f'users/profile/{instance.user.username}_{filename}'
 
-def upload_to_cover_path(instance, filename):
-    return f'users/cover/{instance.user.username}_{filename}'
+# def upload_to_cover_path(instance, filename):
+#     return f'users/cover/{instance.user.username}_{filename}'
 
 class Profile(models.Model):
     GENDER_CHOICES = (
@@ -28,8 +28,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
-    profile_picture = models.ImageField(upload_to=upload_to_profile_path, default='users/profile.png')
-    cover_picture = models.ImageField(upload_to=upload_to_cover_path, default='users/cover.jpg')
+    profile_picture = models.TextField(default='')
+    cover_picture = models.TextField(default='')
     bio = models.CharField(max_length=255, null=True, blank=True)
     relationship_status = models.CharField(max_length=2, choices=RELATIONSHIP_STATUS_CHOICES, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
