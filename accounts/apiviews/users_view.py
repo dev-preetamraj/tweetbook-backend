@@ -1,4 +1,5 @@
 import logging
+
 from rest_framework.views import APIView
 from rest_framework.versioning import NamespaceVersioning
 from rest_framework.permissions import AllowAny
@@ -7,12 +8,15 @@ from tweetbook.utils import custom_exceptions as ce
 from tweetbook.utils.custom_validators import CustomValidator
 
 from tweetbook.common import (
-    messages as global_msg,
-    constants as global_const
+    messages as global_msg
 )
 
-from accounts.helpers.function_helpers.users_helper_fn import (
-    register_user_fn
+from accounts.common import (
+    messages as app_msg
+)
+
+from accounts.services.users_services import (
+    register_user_service
 )
 
 # Get an instance of logger
@@ -26,35 +30,37 @@ class VersioningConfig(NamespaceVersioning):
     allowed_versions = ['v1']
     version_param = 'version'
 
-class RegisterUserView(APIView):
+class UsersView(APIView):
     '''
-        Manage User Registration
+    Handle Users Registration and User Related Stuff
     '''
 
     versioning_class = VersioningConfig
     permission_classes = [AllowAny]
 
     def post(self, request):
+        '''
+        [summary]:
+            Args:
+            request (POST):
+            email: Unique email address for registration
+            username: Unique username
+            password: 8 or more character long string
+            confirm_password: Password for confirmation
+        Returns:
+            json: created user object
+        '''
+
         try:
             if request.version == 'v1':
                 schema = {
-                    'username': {
-                        'required': True,
-                        'empty': False,
-                        'type': 'string'
-                    },
                     'email': {
                         'required': True,
                         'empty': False,
                         'type': 'string',
                         'isemail': True
                     },
-                    'first_name': {
-                        'required': True,
-                        'empty': False,
-                        'type': 'string'
-                    },
-                    'last_name': {
+                    'username': {
                         'required': True,
                         'empty': False,
                         'type': 'string'
@@ -70,28 +76,30 @@ class RegisterUserView(APIView):
                         'empty': False,
                         'type': 'string',
                         'minlength': 8
-                    },
+                    }
                 }
+
                 is_valid = c_validator.validate(request.data, schema)
                 if is_valid:
-                    result = register_user_fn(request)
+                    result = register_user_service(request)
                     return result
                 else:
                     raise ce.ValidationFailed({
                         'message': global_msg.VALIDATION_FAILED,
                         'data': c_validator.errors
                     })
+
             else:
                 raise ce.VersionNotSupported
-            
+        
         except ce.ValidationFailed as vf:
-            logger.error(f'RegisterUserView API VIEW - POST : {vf}')
+            logger.error(f'UsersView - post : {vf}')
             raise
 
         except ce.VersionNotSupported as vns:
-            logger.error(f'RegisterUserView API VIEW - POST : {vns}')
+            logger.error(f'UsersView - post : {vns}')
             raise
 
         except Exception as e:
-            logger.error(f'RegisterUserView API VIEW - POST : {e}')
+            logger.error(f'UsersView - post : {e}')
             raise ce.InternalServerError
