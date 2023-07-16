@@ -12,20 +12,23 @@ logger = logging.getLogger('accounts')
 
 UserAccount = get_user_model()
 
+
 def is_email_unique_query(email):
     try:
         return not UserAccount.objects.filter(email=email).exists()
     except Exception as e:
         logger.error(f'queries.users_queries.is_email_unique_query: {e}')
         return False
-    
+
+
 def is_username_unique_query(username):
     try:
         return not UserAccount.objects.filter(username=username).exists()
     except Exception as e:
         logger.error(f'queries.users_queries.is_username_unique_query: {e}')
         return False
-        
+
+
 def register_user_query(data):
     try:
         email = data.get('email')
